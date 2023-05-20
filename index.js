@@ -11,7 +11,7 @@ app.use(express.json());
 
 // mongoDB
 
-console.log(process.env.DB_USER);
+
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.4s3yid7.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -35,19 +35,28 @@ async function run() {
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
     // get method
-    app.get('/toycategory', async(req,res) => {
+    app.get('/toycategory/:category', async(req,res) => {
+      
+        if(req.params.category == "Science Toys" || req.params.category == 'Language Toys' || req.params.category == 'Math Toys') {
+            const cursor = toysCollection.find({subCategory: req.params.category})
+        const result = await cursor.toArray();
+        console.log(result, cursor)
+       return res.send(result);
+
+        }
+
         const cursor = toysCollection.find()
         const result = await cursor.toArray();
         res.send(result);
     })
 
 
-    // app.post("/postToy", async(req, res) => {
-    //     const body = req.body;
-    //     const result = await toysCollection.inserOne(body);
-    //     console.log(result);
-    //     res.send(result);
-    // } )
+    app.post('/postToy', async(req, res) => {
+        const body = req.body;
+        const result = await toysCollection.insertOne(body);
+        console.log(result);
+        res.send(result);
+    } )
 
   } finally {
     // Ensures that the client will close when you finish/error
