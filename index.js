@@ -53,7 +53,7 @@ async function run() {
 
     // my toys
     app.get('/myToys/:email', async(req, res) =>{
-      console.log(req.params.email);
+      console.log('hitting the route',req.params.email);
       const result = await toysCollection.find({postedBy : req.params.email }).toArray();
       res.send(result)
     })
