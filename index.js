@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 
@@ -64,6 +64,27 @@ async function run() {
         console.log(result);
         res.send(result);
     } )
+// Edit api call
+app.patch("/myToys/:id", async(req, res) => {
+  const id  = req.params.id;
+  const filter  = { _id: new ObjectId(id) }
+  const updateCategory = req.body
+  console.log(updateCategory);
+  const updateCategories = {
+    $set: {
+      status : updateCategory.status
+    },
+  };
+  const result = await toysCollection.updateOne(filter, updateCategories)
+  res.send(result);
+} )
+    // Delete Api call 
+    app.delete('/myToys/:id', async (req, res)  => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await toysCollection.deleteOne(query)
+      res.send(result);
+    })
 
   } finally {
     // Ensures that the client will close when you finish/error
