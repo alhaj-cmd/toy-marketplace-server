@@ -50,7 +50,12 @@ async function run() {
         res.send(result);
     })
 
-
+//  all category 
+app.get('/allCategory', async(req,res) =>{
+  const cursor = toysCollection.find();
+  const result = await cursor.toArray()
+  res.send(result);
+})
     // my toys
     app.get('/myToys/:email', async(req, res) =>{
       console.log('hitting the route',req.params.email);
