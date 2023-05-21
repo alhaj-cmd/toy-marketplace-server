@@ -56,6 +56,24 @@ app.get('/allCategory', async(req,res) =>{
   const result = await cursor.toArray()
   res.send(result);
 })
+
+// single toy details
+app.get('/toycategory/:id', async(req, res) =>{
+  const id  = req.params.id;
+  const query = { _id: new ObjectId(id) }
+
+  const options = {
+    projection: {
+      toyName: 1, seller: 1, price: 1, subCategory: 1, rating:1, picture:1, description:1, availableQuantity:1
+    }
+  }
+
+  const result = await toysCollection.findOne(query, options)
+  res.send(result);
+} )
+
+
+
     // my toys
     app.get('/myToys/:email', async(req, res) =>{
       console.log('hitting the route',req.params.email);
