@@ -31,14 +31,14 @@ async function run() {
 
     const toysCollection = client.db('toyMarket').collection('market')
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
     // creating index on fields
-    const indexKeys = { toyName: 1 };
-    const indexOptions = { name: "toyTitle" };
+    // const indexKeys = { toyName: 1 };
+    // const indexOptions = { name: "toyTitle" };
 
-    const result = await toysCollection.createIndex(indexKeys, indexOptions);
+    // const result = await toysCollection.createIndex(indexKeys, indexOptions);
 
     // search input field
     app.get("/searchToyname/:text", async (req, res) => {
@@ -111,17 +111,24 @@ async function run() {
       res.send(result);
     })
     // Edit api call
-    app.patch("/myToys/:id", async (req, res) => {
+    app.put("/myToys/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) }
+
+      const options = {
+       upsert:true
+      };
+
       const updateCategory = req.body
       console.log(updateCategory);
-      const updateCategories = {
+      const toy = {
         $set: {
-          status: updateCategory.status
+          price:updateCategory.price,
+          description:updateCategory.description,
+          category:updateCategory.category
         },
       };
-      const result = await toysCollection.updateOne(filter, updateCategories)
+      const result = await toysCollection.updateOne(filter, toy, options)
       res.send(result);
     })
     // Delete Api call 
