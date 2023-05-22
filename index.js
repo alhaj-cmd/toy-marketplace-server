@@ -34,6 +34,26 @@ async function run() {
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
+    // creating index on fields
+    const indexKeys = { toyName: 1 };
+    const indexOptions = { name: "toyTitle" };
+
+    const result = await toysCollection.createIndex(indexKeys, indexOptions);
+
+    // search input field
+    app.get("/searchToyname/:text", async (req, res) => {
+      const searchText = req.params.text
+
+      console.log(searchText);
+      const result = await toysCollection.find({
+        $or: [
+          { toyName: { $regex: searchText, $options: "i" } }
+        ]
+      }).toArray()
+
+      res.send(result)
+    })
+
 
     // get method
 
@@ -54,13 +74,13 @@ async function run() {
 
     //  all category 
     app.get('/allCategory', async (req, res) => {
-      const cursor = toysCollection.find();
+      const cursor = toysCollection.find().limit(20);
       const result = await cursor.toArray()
       res.send(result);
     })
 
 
-    
+
     // single toy details
     app.get('/allCategory/:id', async (req, res) => {
       const id = req.params.id;
@@ -80,7 +100,7 @@ async function run() {
 
     // my toys
     app.get('/myToys/:email', async (req, res) => {
-      const result = await toysCollection.find({ postedBy: req.params.email }).toArray();
+      const result = await toysCollection.find({ postedBy: req.params.email }).sort({ price: -1 }).toArray();
       res.send(result)
     })
 
